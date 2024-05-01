@@ -4,12 +4,8 @@ class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine("Hello Sandbox World!");
-        Console.WriteLine("Hello Sandbox World!");
-
-        Console.Write("What is your favorite color? ");
-        string color = Console.ReadLine();
-        Console.WriteLine($"Your color is {color}");
-
+        Console.WriteLine("Who is your best member?");
+        string member = Console.ReadLine();
+        Console.WriteLine($"Your best is {member}")
     }
 }
