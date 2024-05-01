@@ -4,8 +4,8 @@ class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine("Who is your best member?");
-        string member = Console.ReadLine();
-        Console.WriteLine($"Your best is {member}")
+        Console.Write("Who is your best color?");
+        string color = Console.ReadLine();
+        Console.WriteLine($"Your best is {color}");
     }
 }
