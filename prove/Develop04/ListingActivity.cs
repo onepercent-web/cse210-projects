@@ -32,7 +32,7 @@ public class ReflectionActivity
         int duration = int.Parse(Console.ReadLine());
 
         Console.WriteLine("Get ready...");
-        DisplayCountdown(3);
+        DisplayCountdown(3); //Display 3 second countdown
 
         Random random = new Random();
         int promptIndex = random.Next(Prompts.Length);
@@ -47,11 +47,11 @@ public class ReflectionActivity
         {
             int questionIndex = random.Next(Questions.Length);
             Console.WriteLine($"\n> {Questions[questionIndex]}");
-            DisplaySpinner(5); // スピナーアニメーションを表示して考える時間を与える
+            DisplaySpinner(5); //Display 5 second countdown
         }
 
         Console.WriteLine("\nWell done!!");
-        DisplayCountdown(3);
+        DisplayCountdown(3); //Display 3 second countdown
     }
 
     private void DisplayCountdown(int seconds)
@@ -59,7 +59,7 @@ public class ReflectionActivity
         for (int i = seconds; i > 0; i--)
         {
             Console.Write(i + " ");
-            Thread.Sleep(1000); // 1秒待機
+            Thread.Sleep(1000); // 1 seconds preparation time
         }
         Console.WriteLine();
     }
@@ -78,10 +78,10 @@ public class ReflectionActivity
                 case 3: Console.Write("|"); break;
             }
             counter++;
-            Thread.Sleep(250); // 0.25秒待機
-            Console.Write("\b"); // 1文字分戻る
+            Thread.Sleep(250);  // 0.25 seconds preparation time
+            Console.Write("\b"); // back one character
         }
-        Console.Write(" "); // 最後のスピナーを消す
-        Console.Write("\b"); // スペースを消す
+        Console.Write(" ");  // erase the last spinner
+        Console.Write("\b"); // erase space
     }
 }

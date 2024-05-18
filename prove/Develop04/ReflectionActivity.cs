@@ -47,7 +47,7 @@ public class ReflectionActivity
         {
             int questionIndex = random.Next(Questions.Length);
             Console.WriteLine($"\n> {Questions[questionIndex]}");
-            DisplaySpinner(5); // スピナーアニメーションを表示して考える時間を与える
+            DisplaySpinner(5); //Display 5 second countdown
         }
 
         Console.WriteLine("\nWell done!!");
