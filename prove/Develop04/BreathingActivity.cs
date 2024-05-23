@@ -1,38 +1,26 @@
-using System;  //Declaration for use basic C# functions
-using System.Threading; //Declaration of function to pause the program
+using System;
+using System.Threading;
 
-public class BreathingActivity
+namespace MindfulnessApp
 {
-    public void Start()
+    public class BreathingActivity : MindfulnessActivity
     {
-        Console.Clear(); // Clear the console screen
-        Console.WriteLine("Welcome to the Breathing Activity.");
-        Console.WriteLine("This activity will help you relax by walking you through breathing in and out slowly. Clear your mind and focus on your breathing.");
-        Console.Write("How long, in seconds, would you like for your session? ");
-        int duration = int.Parse(Console.ReadLine());
-
-        Console.WriteLine("Get ready..."); // Display ready message
-        Thread.Sleep(3000); // 3 seconds preparation time
-
-        for (int i = 0; i < duration / 6; i++) // 6 seconds for each cycle (3 seconds for inhale + 3 seconds for exhale)
+        public BreathingActivity()
         {
-            Console.WriteLine("Breathe in..."); 
-            DisplayCountdown(3); // 3 seconds to display
-            Console.WriteLine("Now breathe out...");
-            DisplayCountdown(3); //Display 3 second countdown
+            Name = "Breathing";
+            Description = "This activity will help you relax by walking you through breathing in and out slowly. Clear your mind and focus on your breathing.";
         }
 
-        Console.WriteLine("Well done!!"); //display end message
-        Thread.Sleep(3000); // 3 seconds to display
-    }
-
-    private void DisplayCountdown(int seconds)
-    {
-        for (int i = seconds; i > 0; i--)
+        protected override void ExecuteActivity()
         {
-            Console.Write(i + " ");
-            Thread.Sleep(1000); // 1 seconds preparation time
+            int halfDuration = Duration / 2;
+            for (int i = 0; i < halfDuration; i++)
+            {
+                Console.WriteLine("Breathe in...");
+                ShowCountdown(5);
+                Console.WriteLine("Breathe out...");
+                ShowCountdown(5);
+            }
         }
-        Console.WriteLine();
     }
 }

@@ -2,86 +2,46 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-public class ReflectionActivity
+namespace MindfulnessApp
 {
-    private static readonly string[] Prompts = {
-        "Think of a time when you stood up for someone else.",
-        "Think of a time when you did something really difficult.",
-        "Think of a time when you helped someone in need.",
-        "Think of a time when you did something truly selfless."
-    };
-
-    private static readonly string[] Questions = {
-        "Why was this experience meaningful to you?",
-        "Have you ever done anything like this before?",
-        "How did you get started?",
-        "How did you feel when it was complete?",
-        "What made this time different than other times when you were not as successful?",
-        "What is your favorite thing about this experience?",
-        "What could you learn from this experience that applies to other situations?",
-        "What did you learn about yourself through this experience?",
-        "How can you keep this experience in mind in the future?"
-    };
-
-    public void Start()
+    public class ListingActivity : MindfulnessActivity
     {
-        Console.Clear();
-        Console.WriteLine("Welcome to the Reflection Activity.");
-        Console.WriteLine("This activity will help you reflect on times in your life when you have shown strength and resilience.");
-        Console.Write("How long, in seconds, would you like for your session? ");
-        int duration = int.Parse(Console.ReadLine());
-
-        Console.WriteLine("Get ready...");
-        DisplayCountdown(3); //Display 3 second countdown
-
-        Random random = new Random();
-        int promptIndex = random.Next(Prompts.Length);
-        Console.WriteLine("\nConsider the following prompt:");
-        Console.WriteLine($"\n--- {Prompts[promptIndex]} ---");
-        Console.WriteLine("When you have something in mind, press enter to continue.");
-        Console.ReadLine(); 
-
-        DateTime endTime = DateTime.Now.AddSeconds(duration);
-
-        while (DateTime.Now < endTime)
+        private readonly List<string> prompts = new List<string>
         {
-            int questionIndex = random.Next(Questions.Length);
-            Console.WriteLine($"\n> {Questions[questionIndex]}");
-            DisplaySpinner(5); //Display 5 second countdown
+            "Who are people that you appreciate?",
+            "What are personal strengths of yours?",
+            "Who are people that you have helped this week?",
+            "When have you felt the Holy Ghost this month?",
+            "Who are some of your personal heroes?"
+        };
+
+        public ListingActivity()
+        {
+            Name = "Listing";
+            Description = "This activity will help you reflect on the good things in your life by having you list as many things as you can in a certain area.";
         }
 
-        Console.WriteLine("\nWell done!!");
-        DisplayCountdown(3); //Display 3 second countdown
-    }
-
-    private void DisplayCountdown(int seconds)
-    {
-        for (int i = seconds; i > 0; i--)
+        protected override void ExecuteActivity()
         {
-            Console.Write(i + " ");
-            Thread.Sleep(1000); // 1 seconds preparation time
-        }
-        Console.WriteLine();
-    }
+            Random random = new Random();
+            string prompt = prompts[random.Next(prompts.Count)];
+            Console.WriteLine(prompt);
+            ShowSpinner(5);
 
-    private void DisplaySpinner(int duration)
-    {
-        DateTime endTime = DateTime.Now.AddSeconds(duration);
-        int counter = 0;
-        while (DateTime.Now < endTime)
-        {
-            switch (counter % 4)
+            Console.WriteLine("Start listing items:");
+
+            int itemCount = 0;
+            DateTime endTime = DateTime.Now.AddSeconds(Duration);
+            while (DateTime.Now < endTime)
             {
-                case 0: Console.Write("/"); break;
-                case 1: Console.Write("-"); break;
-                case 2: Console.Write("\\"); break;
-                case 3: Console.Write("|"); break;
+                string item = Console.ReadLine();
+                if (!string.IsNullOrWhiteSpace(item))
+                {
+                    itemCount++;
+                }
             }
-            counter++;
-            Thread.Sleep(250);  // 0.25 seconds preparation time
-            Console.Write("\b"); // back one character
+
+            Console.WriteLine($"You have listed {itemCount} items.");
         }
-        Console.Write(" ");  // erase the last spinner
-        Console.Write("\b"); // erase space
     }
 }
