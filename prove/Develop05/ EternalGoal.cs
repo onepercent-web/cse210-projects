@@ -1,17 +1,14 @@
-// EternalGoal.cs
-
-using System;
-
 public class EternalGoal : Goal
 {
-    // コンストラクタ
-    public EternalGoal(string name, int points) : base(name, points)
+    public EternalGoal(string name, string description, int value) : base(name, description, value) { }
+
+    public override void RecordEvent()
     {
+        // Eternal goals are never marked as complete
     }
 
-    // 目標を達成したときに呼ばれるメソッドの実装
-    public override void Complete()
+    public override string GetStatus()
     {
-        Console.WriteLine($"{Name} recorded! You earned {Points} points.");
+        return $"[∞] {Name} ({Description})";
     }
 }

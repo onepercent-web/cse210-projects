@@ -1,196 +1,185 @@
-// Program.cs
-
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 
 class Program
 {
-    static List<Goal> goals = new List<Goal>(); // 目標のリスト
-    static int totalScore = 0; // ユーザーの合計スコア
+    static List<Goal> goals = new List<Goal>();
+    static int score = 0;
 
     static void Main(string[] args)
     {
-        LoadGoals(); // 保存された目標とスコアを読み込む
-
+        LoadData();
         while (true)
         {
-            ShowMenu(); // メニューを表示する
-            string choice = Console.ReadLine();
+            Console.Clear();
+            Console.WriteLine("Eternal Quest Program");
+            Console.WriteLine("---------------------");
+            Console.WriteLine("1. Create New Goal");
+            Console.WriteLine("2. List Goals");
+            Console.WriteLine("3. Save Goals");
+            Console.WriteLine("4. Load Goals");
+            Console.WriteLine("5. Record Event");
+            Console.WriteLine("6. Quit");
+            Console.WriteLine("---------------------");
+            Console.Write("Select a choice from the menu: ");
+            string option = Console.ReadLine();
 
-            switch (choice)
+            switch (option)
             {
                 case "1":
                     CreateNewGoal();
                     break;
                 case "2":
-                    RecordGoalEvent();
+                    ListGoals();
                     break;
                 case "3":
-                    ShowGoals();
+                    SaveData();
                     break;
                 case "4":
-                    ShowScore();
+                    LoadData();
                     break;
                 case "5":
-                    SaveGoals();
+                    RecordEvent();
+                    break;
+                case "6":
                     return;
                 default:
-                    Console.WriteLine("Invalid choice, please try again.");
+                    Console.WriteLine("Invalid option. Please try again.");
                     break;
             }
         }
     }
 
-    // メニューを表示するメソッド
-    static void ShowMenu()
-    {
-        Console.WriteLine("Eternal Quest Program");
-        Console.WriteLine("1. Create a new goal");
-        Console.WriteLine("2. Record a goal event");
-        Console.WriteLine("3. Show goals");
-        Console.WriteLine("4. Show score");
-        Console.WriteLine("5. Save and exit");
-    }
-
-    // 新しい目標を作成するメソッド
     static void CreateNewGoal()
     {
-        Console.WriteLine("Select the type of goal:");
+        Console.WriteLine("The types of Goals are:");
         Console.WriteLine("1. Simple Goal");
         Console.WriteLine("2. Eternal Goal");
         Console.WriteLine("3. Checklist Goal");
-        string typeChoice = Console.ReadLine();
+        Console.Write("Which type of goal would you like to create? ");
+        string option = Console.ReadLine();
 
-        Console.Write("Enter the name of the goal: ");
+        Console.Write("What is the name of your goal? ");
         string name = Console.ReadLine();
+        Console.Write("What is a short description of it? ");
+        string description = Console.ReadLine();
+        Console.Write("What is the amount of points associated with this goal? ");
+        int value = int.Parse(Console.ReadLine());
 
-        Console.Write("Enter the points for the goal: ");
-        int points = int.Parse(Console.ReadLine());
-
-        switch (typeChoice)
+        switch (option)
         {
             case "1":
-                goals.Add(new SimpleGoal(name, points));
+                goals.Add(new SimpleGoal(name, description, value));
                 break;
             case "2":
-                goals.Add(new EternalGoal(name, points));
+                goals.Add(new EternalGoal(name, description, value));
                 break;
             case "3":
-                Console.Write("Enter the required completions: ");
-                int requiredCompletions = int.Parse(Console.ReadLine());
-                Console.Write("Enter the bonus points: ");
-                int bonusPoints = int.Parse(Console.ReadLine());
-                goals.Add(new ChecklistGoal(name, points, requiredCompletions, bonusPoints));
+                Console.Write("How many times does this goal need to be accomplished for a bonus? ");
+                int targetCount = int.Parse(Console.ReadLine());
+                Console.Write("What is the bonus for accomplishing it that many times? ");
+                int bonus = int.Parse(Console.ReadLine());
+                goals.Add(new ChecklistGoal(name, description, value, targetCount, bonus));
                 break;
             default:
-                Console.WriteLine("Invalid choice, goal not created.");
+                Console.WriteLine("Invalid goal type. Please try again.");
                 break;
         }
     }
 
-    // 目標達成を記録するメソッド
-    static void RecordGoalEvent()
+    static void ListGoals()
     {
-        ShowGoals();
-        Console.Write("Enter the number of the goal to record: ");
-        int goalNumber = int.Parse(Console.ReadLine()) - 1;
-
-        if (goalNumber >= 0 && goalNumber < goals.Count)
+        Console.WriteLine("The goals are:");
+        for (int i = 0; i < goals.Count; i++)
         {
-            goals[goalNumber].Complete();
-            totalScore += goals[goalNumber].Points;
+            Console.WriteLine($"{i + 1}. {goals[i].GetStatus()}");
+        }
+        Console.WriteLine($"You have {score} points.");
+        Console.WriteLine("Press any key to continue...");
+        Console.ReadKey();
+    }
+
+    static void RecordEvent()
+    {
+        Console.WriteLine("The goals are:");
+        for (int i = 0; i < goals.Count; i++)
+        {
+            Console.WriteLine($"{i + 1}. {goals[i].Name}");
+        }
+        Console.Write("Which goal did you accomplish? ");
+        int index = int.Parse(Console.ReadLine()) - 1;
+
+        if (index >= 0 && index < goals.Count)
+        {
+            goals[index].RecordEvent();
+            score += goals[index].Value;
+            if (goals[index] is ChecklistGoal checklistGoal && checklistGoal.IsCompleted)
+            {
+                score += checklistGoal.Bonus;
+            }
+            Console.WriteLine("Event recorded.");
         }
         else
         {
-            Console.WriteLine("Invalid goal number.");
+            Console.WriteLine("Invalid goal selection.");
         }
+        Console.WriteLine("Press any key to continue...");
+        Console.ReadKey();
     }
 
-    // 目標のリストを表示するメソッド
-    static void ShowGoals()
+    static void SaveData()
     {
-        for (int i = 0; i < goals.Count; i++)
+        var data = new
         {
-            var goal = goals[i];
-            Console.WriteLine($"{i + 1}. {goal.Name} - Points: {goal.Points}");
-            if (goal is SimpleGoal sg)
-                Console.WriteLine($"   Completed: {sg.IsCompleted}");
-            else if (goal is ChecklistGoal cg)
-                Console.WriteLine($"   Completed: {cg.CurrentCompletions}/{cg.RequiredCompletions}");
-        }
+            Score = score,
+            Goals = goals
+        };
+        File.WriteAllText("goals.json", JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true }));
+        Console.WriteLine("Data saved successfully.");
+        Console.WriteLine("Press any key to continue...");
+        Console.ReadKey();
     }
 
-    // スコアを表示するメソッド
-    static void ShowScore()
+    static void LoadData()
     {
-        Console.WriteLine($"Total Score: {totalScore}");
-    }
-
-    // 目標とスコアを保存するメソッド
-    static void SaveGoals()
-    {
-        using (StreamWriter writer = new StreamWriter("goals.txt"))
+        if (File.Exists("goals.json"))
         {
-            writer.WriteLine(totalScore);
-            foreach (var goal in goals)
+            var data = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(File.ReadAllText("goals.json"));
+            score = data["Score"].GetInt32();
+            goals.Clear();
+            foreach (var goalData in data["Goals"].EnumerateArray())
             {
-                if (goal is SimpleGoal sg)
-                {
-                    writer.WriteLine($"Simple|{goal.Name}|{goal.Points}|{sg.IsCompleted}");
-                }
-                else if (goal is EternalGoal eg)
-                {
-                    writer.WriteLine($"Eternal|{goal.Name}|{goal.Points}");
-                }
-                else if (goal is ChecklistGoal cg)
-                {
-                    writer.WriteLine($"Checklist|{goal.Name}|{goal.Points}|{cg.RequiredCompletions}|{cg.BonusPoints}|{cg.CurrentCompletions}");
-                }
-            }
-        }
-    }
+                string name = goalData.GetProperty("Name").GetString();
+                string description = goalData.GetProperty("Description").GetString();
+                int value = goalData.GetProperty("Value").GetInt32();
+                bool isCompleted = goalData.GetProperty("IsCompleted").GetBoolean();
+                string type = goalData.GetProperty("Type").GetString();
 
-    // 目標とスコアを読み込むメソッド
-    static void LoadGoals()
-    {
-        if (File.Exists("goals.txt"))
-        {
-            using (StreamReader reader = new StreamReader("goals.txt"))
-            {
-                totalScore = int.Parse(reader.ReadLine());
-                while (!reader.EndOfStream)
+                Goal goal = type switch
                 {
-                    var line = reader.ReadLine().Split('|');
-                    string type = line[0];
-                    string name = line[1];
-                    int points = int.Parse(line[2]);
-
-                    switch (type)
+                    "SimpleGoal" => new SimpleGoal(name, description, value),
+                    "EternalGoal" => new EternalGoal(name, description, value),
+                    "ChecklistGoal" => new ChecklistGoal(name, description, value, 
+                                        goalData.GetProperty("TargetCount").GetInt32(), 
+                                        goalData.GetProperty("Bonus").GetInt32())
                     {
-                        case "Simple":
-                            bool isCompleted = bool.Parse(line[3]);
-                            var sg = new SimpleGoal(name, points);
-                            sg.SetIsCompleted(isCompleted);
-                            goals.Add(sg);
-                            break;
-                        case "Eternal":
-                            var eg = new EternalGoal(name, points);
-                            goals.Add(eg);
-                            break;
-                        case "Checklist":
-                            int requiredCompletions = int.Parse(line[3]);
-                            int bonusPoints = int.Parse(line[4]);
-                            int currentCompletions = int.Parse(line[5]);
-                            var cg = new ChecklistGoal(name, points, requiredCompletions, bonusPoints)
-                            {
-                                CurrentCompletions = currentCompletions
-                            };
-                            goals.Add(cg);
-                            break;
-                    }
-                }
+                        CurrentCount = goalData.GetProperty("CurrentCount").GetInt32(),
+                        IsCompleted = isCompleted
+                    },
+                    _ => throw new InvalidOperationException("Unknown goal type.")
+                };
+
+                goals.Add(goal);
             }
+            Console.WriteLine("Data loaded successfully.");
         }
+        else
+        {
+            Console.WriteLine("No saved data found.");
+        }
+        Console.WriteLine("Press any key to continue...");
+        Console.ReadKey();
     }
 }

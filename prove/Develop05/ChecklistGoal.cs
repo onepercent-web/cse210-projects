@@ -1,32 +1,33 @@
-// ChecklistGoal.cs
-
-using System;
-
 public class ChecklistGoal : Goal
 {
-    public int RequiredCompletions { get; private set; } // 目標達成に必要な回数
-    public int CurrentCompletions { get; set; } // 現在の達成回数
-    public int BonusPoints { get; private set; } // ボーナスポイント
+    public int TargetCount { get; set; }
+    public int CurrentCount { get; set; }
+    public int Bonus { get; set; }
 
-    // コンストラクタ
-    public ChecklistGoal(string name, int points, int requiredCompletions, int bonusPoints)
-        : base(name, points)
+    public ChecklistGoal(string name, string description, int value, int targetCount, int bonus) 
+        : base(name, description, value)
     {
-        RequiredCompletions = requiredCompletions;
-        BonusPoints = bonusPoints;
-        CurrentCompletions = 0;
+        TargetCount = targetCount;
+        CurrentCount = 0;
+        Bonus = bonus;
     }
 
-    // 目標を達成したときに呼ばれるメソッドの実装
-    public override void Complete()
+    public override void RecordEvent()
     {
-        CurrentCompletions++;
-        Console.WriteLine($"{Name} recorded! You earned {Points} points.");
-
-        if (CurrentCompletions >= RequiredCompletions)
+        if (CurrentCount < TargetCount)
         {
-            Console.WriteLine($"Congratulations! You completed {Name} and earned a bonus of {BonusPoints} points.");
-            CurrentCompletions = 0; // 目標をリセットして再度チャレンジ可能にする場合
+            CurrentCount++;
+            if (CurrentCount == TargetCount)
+            {
+                IsCompleted = true;
+            }
         }
+    }
+
+    public override string GetStatus()
+    {
+        return IsCompleted 
+            ? $"[X] {Name} ({Description}) -- Currently completed: {CurrentCount}/{TargetCount}" 
+            : $"[ ] {Name} ({Description}) -- Currently completed: {CurrentCount}/{TargetCount}";
     }
 }
