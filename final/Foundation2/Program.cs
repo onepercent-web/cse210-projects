@@ -16,7 +16,7 @@ class Program
         // Create customer 4 and their address
         Customer customer4 = new Customer("Ruby King", new Address("113  Stone St", "Salt Lake", "UT", "USA"));
          // Create customer 5 and their address
-        Customer customer5 = new Customer("Ruby King", new Address("710 Haru St", "Fussa", "TOKYO", "JAPAN"));
+        Customer customer5 = new Customer("Yamada toyota", new Address("710 Haru St", "Fussa", "TOKYO", "JAPAN"));
 
         // Create Product
         Product product1 = new Product("Notebook", "371A", 3.24m, 2);
